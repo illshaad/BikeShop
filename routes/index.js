@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var stripe = require("stripe")("sk_test_qetAhAiqPai9hKqP91VIttAp");
+
 
 // This is our new data structure (as an array of objects), to store our bikes info.
 var dataBike = [
@@ -58,6 +60,28 @@ router.get('/delete-shop', function(req, res, next) {
 router.post('/update-shop', function(req, res, next) {
   req.session.dataCardBike[req.body.position].quantity = req.body.quantity;
   res.render('shop', {dataCardBike : req.session.dataCardBike});
+});
+
+/* Post checkout Stripe */
+router.post('/checkout', function(req, res, next) {
+  var token = req.body.stripeToken;
+  
+  var total = null;
+
+  for(var i = 0 ; i < req.session.dataCardBike.length; i++){
+    var totalRow = req.session.dataCardBike[i].price * req.session.dataCardBike[i].quantity;
+    total += totalRow;
+  } 
+  console.log(total);
+
+  var charge = stripe.charges.create({
+    amount: total,
+    currency: 'eur',
+    description: 'Shadd test',
+    source: token,
+  }, function(err, charge){
+    res.render('paiement', {amount: total})
+  });
 });
 
 
