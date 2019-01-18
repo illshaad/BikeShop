@@ -50,8 +50,6 @@ router.post('/shop', function(req, res, next)
 /* GET delete shop page. */
 router.get('/delete-shop', function(req, res, next) {
   req.session.dataCardBike.splice(req.query.position, 1);
-
-  
   res.render('shop', {dataCardBike : req.session.dataCardBike });
 });
 
@@ -71,7 +69,7 @@ router.post('/checkout', function(req, res, next) {
   for(var i = 0 ; i < req.session.dataCardBike.length; i++){
     var totalRow = req.session.dataCardBike[i].price * req.session.dataCardBike[i].quantity;
     total += totalRow;
-  } 
+  }  //
   console.log(total);
 
   var charge = stripe.charges.create({
